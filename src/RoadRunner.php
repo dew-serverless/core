@@ -2,6 +2,7 @@
 
 namespace Dew\Core;
 
+use Dew\Core\Contracts\ServesHttpRequest;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use Spiral\RoadRunner\Http\PSR7Worker;
@@ -10,7 +11,7 @@ use Spiral\RoadRunner\Worker;
 use Spiral\RoadRunner\WorkerInterface;
 use Throwable;
 
-class RoadRunner
+class RoadRunner implements ServesHttpRequest
 {
     /**
      * HTTP Factories.
@@ -36,12 +37,11 @@ class RoadRunner
     /**
      * Make a new RoadRunner instance.
      *
-     * @param  WorkerInterface|null  $worker
      * @return static
      */
-    public static function make(?WorkerInterface $worker = null)
+    public static function createFromGlobal()
     {
-        return new static($worker ?: Worker::create());
+        return new static(Worker::create());
     }
 
     /**
