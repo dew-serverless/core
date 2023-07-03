@@ -7,11 +7,8 @@ use Dew\Core\Contracts\FunctionComputeEvent;
 use Dew\Core\FpmHandler;
 use Dew\Core\FunctionCompute;
 use Dew\Core\RoadRunner;
-use Dew\Core\Secret;
 use Dew\Core\Server;
 use Psr\Http\Message\ResponseInterface;
-
-Secret::loadFromOos();
 
 $fc = FunctionCompute::createFromEnvironment();
 $server = new Server(RoadRunner::createFromGlobal());
