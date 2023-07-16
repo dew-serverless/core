@@ -102,14 +102,8 @@ class ApiGatewayEvent extends Event
     /**
      * Normalize the HTTP headers.
      */
-    protected function normalizeHeaders(array $header): array
+    protected function normalizeHeaders(array $headers): array
     {
-        $normalized = [];
-
-        foreach ($header as $name => $value) {
-            $normalized[strtolower($name)] = $value;
-        }
-
-        return $normalized;
+        return array_change_key_case($headers, CASE_LOWER);
     }
 }
