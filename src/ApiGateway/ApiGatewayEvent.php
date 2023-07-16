@@ -13,6 +13,21 @@ class ApiGatewayEvent extends Event
      */
     protected ?string $decoded = null;
 
+    /**
+     * The HTTP headers.
+     */
+    protected array $headers;
+
+    /**
+     * Initialize the API Gateway event.
+     */
+    public function __construct($event)
+    {
+        parent::__construct($event);
+
+        $this->headers = $this->normalizeHeaders($this->event['headers'] ?? []);
+    }
+
     public function path(): string
     {
         return $this->event['path'];
@@ -23,14 +38,22 @@ class ApiGatewayEvent extends Event
         return $this->event['pathParameters'];
     }
 
+    /**
+     * Retrieve the HTTP headers.
+     */
     public function headers(): array
     {
-        return $this->event['headers'] ?? [];
+        return $this->headers;
     }
 
-    public function header(string $header): ?string
+    /**
+     * Retrieve the specific HTTP header.
+     */
+    public function header(string $name): ?string
     {
-        return $this->headers()[$header] ?? null;
+        $name = strtolower($name);
+
+        return $this->headers[$name] ?? null;
     }
 
     public function httpMethod(): string
@@ -74,5 +97,19 @@ class ApiGatewayEvent extends Event
     public function queryParameters(): array
     {
         return $this->event['queryParameters'];
+    }
+
+    /**
+     * Normalize the HTTP headers.
+     */
+    protected function normalizeHeaders(array $header): array
+    {
+        $normalized = [];
+
+        foreach ($header as $name => $value) {
+            $normalized[strtolower($name)] = $value;
+        }
+
+        return $normalized;
     }
 }
