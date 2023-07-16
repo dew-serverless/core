@@ -21,7 +21,11 @@ class FastCgiRequestFactory
         $request->setRequestUri($this->buildRequestUri($event->path(), $event->queryParameters()));
         $request->setRequestMethod($event->httpMethod());
         $request->setContent($event->body());
-        $request->setContentType($event->contentType());
+
+        if ($contentType = $event->contentType()) {
+            $request->setContentType($contentType);
+        }
+
         $request->setServerSoftware('dew/'.Dew::version());
 
         $request->setRemoteAddress('127.0.0.1');
