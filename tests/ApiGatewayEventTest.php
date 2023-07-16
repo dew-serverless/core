@@ -26,6 +26,25 @@ class ApiGatewayEventTest extends TestCase
         $this->assertSame('example.com', $event->header('Host'));
     }
 
+    public function test_body_resolution()
+    {
+        $event = new ApiGatewayEvent($this->buildEvent([
+            'body' => 'foo=bar',
+        ]));
+
+        $this->assertSame('foo=bar', $event->body());
+    }
+
+    public function test_body_resolution_decoded()
+    {
+        $event = new ApiGatewayEvent($this->buildEvent([
+            'body' => base64_encode(json_encode(['foo' => 'bar'])),
+            'isBase64Encoded' => true,
+        ]));
+
+        $this->assertSame(json_encode(['foo' => 'bar']), $event->body());
+    }
+
     /**
      * Build API Gateway event.
      */
