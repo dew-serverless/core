@@ -23,9 +23,14 @@ class ApiGatewayEvent extends Event
         return $this->event['pathParameters'];
     }
 
-    public function headers()
+    public function headers(): array
     {
-        return $this->event['headers'];
+        return $this->event['headers'] ?? [];
+    }
+
+    public function header(string $header): ?string
+    {
+        return $this->headers()[$header] ?? null;
     }
 
     public function httpMethod(): string
@@ -59,6 +64,11 @@ class ApiGatewayEvent extends Event
         }
 
         return $this->rawBody();
+    }
+
+    public function contentType(): ?string
+    {
+        return $this->header('Content-Type');
     }
 
     public function queryParameters(): array
