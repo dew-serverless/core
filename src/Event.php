@@ -16,22 +16,22 @@ class Event implements FunctionComputeEvent, ArrayAccess
         }
     }
 
-    public function offsetExists(mixed $offset)
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->event[$offset]);
     }
 
-    public function offsetGet(mixed $offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->event[$offset] ?? null;
     }
 
-    public function offsetSet(mixed $offset, mixed $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new Exception('Could not mutate the event data.');
     }
 
-    public function offsetUnset(mixed $offset)
+    public function offsetUnset(mixed $offset): void
     {
         throw new Exception('Could not mutate the event data.');
     }
