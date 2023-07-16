@@ -71,22 +71,15 @@ class ApiGatewayEvent extends Event
         return base64_decode($string);
     }
 
-    public function rawBody(): string
-    {
-        return $this->event['body'];
-    }
-
     public function body(): string
     {
         if ($this->decoded) {
             return $this->decoded;
         }
 
-        if ($this->isEncoded()) {
-            return $this->decoded = $this->decode($this->rawBody());
-        }
+        $body = $this->event['body'] ?? '';
 
-        return $this->rawBody();
+        return $this->decoded = $this->isEncoded() ? $this->decode($body) : $body;
     }
 
     public function contentType(): ?string
