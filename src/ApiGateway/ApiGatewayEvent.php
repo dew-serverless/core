@@ -91,7 +91,7 @@ class ApiGatewayEvent extends Event
 
     public function contentType(): ?string
     {
-        return $this->header('Content-Type');
+        return $this->header('content-type');
     }
 
     public function queryParameters(): array
