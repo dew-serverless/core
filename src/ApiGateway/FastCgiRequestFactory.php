@@ -20,7 +20,7 @@ class FastCgiRequestFactory
         $request = new FastCgiRequest($this->documentRoot.$this->scriptName);
         $request->setRequestUri($this->buildRequestUri($event->path(), $event->queryParameters()));
         $request->setRequestMethod($event->httpMethod());
-        $request->setContent($event->body());
+        $request->setContent($this->buildContent($event));
 
         if ($contentType = $event->contentType()) {
             $request->setContentType($contentType);
@@ -66,5 +66,21 @@ class FastCgiRequestFactory
         $header = strtoupper($header);
 
         return sprintf('HTTP_%s', $header);
+    }
+
+    /**
+     * Build content type respected request content.
+     */
+    protected function buildContent(ApiGatewayEvent $event): string
+    {
+        $contentType = trim(explode(';', $event->contentType())[0]);
+
+        if ($contentType === 'application/x-www-form-urlencoded') {
+            $body = json_decode($event->body(), associative: true);
+
+            return is_array($body) ? http_build_query($body) : $event->body();
+        }
+
+        return $event->body();
     }
 }
