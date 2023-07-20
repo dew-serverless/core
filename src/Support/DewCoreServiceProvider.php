@@ -10,14 +10,8 @@ class DewCoreServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (Dew::runningInFc()) {
-            $this->configureStorage();
             $this->createViewDirectoryIfNecessarily();
         }
-    }
-
-    protected function configureStorage(): void
-    {
-        $this->app->useStoragePath('/tmp');
     }
 
     protected function createViewDirectoryIfNecessarily(): void
