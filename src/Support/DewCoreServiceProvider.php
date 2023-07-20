@@ -7,6 +7,9 @@ use Illuminate\Support\ServiceProvider;
 
 class DewCoreServiceProvider extends ServiceProvider
 {
+    /**
+     * Bootstrap Dew core.
+     */
     public function boot(): void
     {
         if (Dew::runningInFc()) {
@@ -14,6 +17,9 @@ class DewCoreServiceProvider extends ServiceProvider
         }
     }
 
+    /**
+     * Make compiled view directory if necessarily.
+     */
     protected function createViewDirectoryIfNecessarily(): void
     {
         $directory = $this->app['config']['view.compiled'];
