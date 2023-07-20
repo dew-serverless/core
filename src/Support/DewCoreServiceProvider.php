@@ -13,19 +13,19 @@ class DewCoreServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (Dew::runningInFc()) {
-            $this->createViewDirectoryIfNecessarily();
+            $this->ensureCompiledViewPathExists();
         }
     }
 
     /**
-     * Make compiled view directory if necessarily.
+     * Make compiled view path if necessarily.
      */
-    protected function createViewDirectoryIfNecessarily(): void
+    protected function ensureCompiledViewPathExists(): void
     {
-        $directory = $this->app['config']['view.compiled'];
+        $path = $this->app['config']['view.compiled'];
 
-        if ($directory && ! is_dir($directory)) {
-            mkdir($directory, 0755, recursive: true);
+        if ($path && ! is_dir($path)) {
+            mkdir($path, 0755, recursive: true);
         }
     }
 }
