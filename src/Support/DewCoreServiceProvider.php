@@ -13,7 +13,21 @@ class DewCoreServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (Dew::runningInFc()) {
+            $this->ensureSessionFileLocationExists();
             $this->ensureCompiledViewPathExists();
+        }
+    }
+
+    /**
+     * Make session file location if necessarily.
+     */
+    protected function ensureSessionFileLocationExists(): void
+    {
+        $session = $this->app['config']['session'];
+
+        if ($session['driver'] === 'file' &&
+            ! is_dir($path = $session['files'])) {
+            mkdir($path, 0755, recursive: true);
         }
     }
 
