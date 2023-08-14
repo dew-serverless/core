@@ -12,7 +12,7 @@ $fc = FunctionCompute::createFromEnvironment();
 $server = new Server(RoadRunner::createFromGlobal());
 
 $server->handleEvent(function (FunctionComputeEvent $event): ResponseInterface {
-    $process = Process::fromShellCommandLine($event['command']);
+    $process = Process::fromShellCommandline($event['command']);
 
     return new Response(200, [], json_encode([
         'status' => $process->run(),
