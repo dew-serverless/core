@@ -28,6 +28,22 @@ class ApiGatewayEvent extends Event
         $this->headers = $this->normalizeHeaders($this->event['headers'] ?? []);
     }
 
+    /**
+     * Determine if the given payload belongs to the event.
+     *
+     * @param  array<string, mixed>  $event
+     */
+    public static function is(array $event): bool
+    {
+        return isset($event['httpMethod'])
+            && isset($event['headers'])
+            && isset($event['path'])
+            && isset($event['pathParameters'])
+            && isset($event['body'])
+            && isset($event['queryParameters'])
+            && isset($event['isBase64Encoded']);
+    }
+
     public function path(): string
     {
         return $this->event['path'];

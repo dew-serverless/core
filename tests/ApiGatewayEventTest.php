@@ -9,6 +9,13 @@ class ApiGatewayEventTest extends TestCase
 {
     use InteractsWithApiGateway;
 
+    public function test_event_validation()
+    {
+        $this->assertTrue(ApiGatewayEvent::is($this->toApiGatewayEvent([])->toArray()));
+        $this->assertFalse(ApiGatewayEvent::is(['httpMethod' => 'POST', 'path' => '/']));
+        $this->assertFalse(ApiGatewayEvent::is([]));
+    }
+
     public function test_header_should_be_normalized()
     {
         $event = $this->toApiGatewayEvent([
