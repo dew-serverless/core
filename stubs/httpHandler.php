@@ -1,27 +1,18 @@
 <?php
 
 use Dew\Core\ApiGateway\ApiGatewayEvent;
-use Dew\Core\ApiGateway\FastCgiRequestFactory;
-use Dew\Core\ApiGateway\Response;
-use Dew\Core\Contracts\FunctionComputeEvent;
-use Dew\Core\FpmHandler;
+use Dew\Core\ApiGateway\ApiGatewayHandler;
+use Dew\Core\EventManager;
 use Dew\Core\FunctionCompute;
 use Dew\Core\RoadRunner;
 use Dew\Core\Server;
-use Psr\Http\Message\ResponseInterface;
 
-$fc = FunctionCompute::createFromEnvironment();
-$server = new Server(RoadRunner::createFromGlobal());
+$handlers = new EventManager;
 
-$fpm = new FpmHandler;
-$fpm->start();
+$handlers->register(ApiGatewayEvent::class, ApiGatewayHandler::class);
 
-$factory = new FastCgiRequestFactory('handler.php', $fc->codePath());
+$server = new Server(RoadRunner::createFromGlobal(), $handlers);
 
-$server->handleEvent(function (FunctionComputeEvent $event) use ($fpm, $factory): ResponseInterface {
-    $response = new Response($fpm->handle(
-        $factory->make(new ApiGatewayEvent($event))
-    ));
+$server->contextUsing(FunctionCompute::createFromEnvironment());
 
-    return $response->toApiGatewayFormat();
-});
+$server->handleNext();
