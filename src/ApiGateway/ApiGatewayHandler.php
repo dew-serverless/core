@@ -2,13 +2,13 @@
 
 namespace Dew\Core\ApiGateway;
 
-use Dew\Core\Contracts\EventHandler;
+use Dew\Core\Contracts\HandlesEvent;
 use Dew\Core\Contracts\ServesFastCgiRequest;
 use Dew\Core\FpmHandler;
 use Dew\Core\Server;
 use Psr\Http\Message\ResponseInterface;
 
-class ApiGatewayHandler implements EventHandler
+class ApiGatewayHandler implements HandlesEvent
 {
     public function __construct(
         public Server $server,

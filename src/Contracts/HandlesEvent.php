@@ -4,7 +4,7 @@ namespace Dew\Core\Contracts;
 
 use Psr\Http\Message\ResponseInterface;
 
-interface EventHandler
+interface HandlesEvent
 {
     /**
      * Handle the given event.

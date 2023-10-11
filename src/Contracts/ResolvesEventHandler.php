@@ -7,7 +7,7 @@ interface ResolvesEventHandler
     /**
      * Resolve handler for the given event.
      */
-    public function resolve(string $event): EventHandler;
+    public function resolve(string $event): HandlesEvent;
 
     /**
      * A mapping of event and handler.

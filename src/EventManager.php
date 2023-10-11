@@ -2,7 +2,7 @@
 
 namespace Dew\Core;
 
-use Dew\Core\Contracts\EventHandler;
+use Dew\Core\Contracts\HandlesEvent;
 use Dew\Core\Contracts\ResolvesEventHandler;
 use InvalidArgumentException;
 
@@ -35,7 +35,7 @@ class EventManager implements ResolvesEventHandler
     /**
      * Resolve handler for the given event.
      */
-    public function resolve(string $event): EventHandler
+    public function resolve(string $event): HandlesEvent
     {
         if (isset($this->resolved[$event])) {
             return $this->resolved[$event];
