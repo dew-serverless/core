@@ -21,7 +21,7 @@ class ApiGatewayHandler extends EventHandler
         $this->fpm->start();
 
         $this->factory = $this->factory ?: new FastCgiRequestFactory(
-            'handler.php', $this->server->context()->codePath()
+            'handler.php', $this->events->context()->codePath()
         );
     }
 

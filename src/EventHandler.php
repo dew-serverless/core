@@ -17,6 +17,6 @@ abstract class EventHandler implements HandlesEvent
      */
     public function events(): EventManager
     {
-        return $this->server;
+        return $this->events;
     }
 }
