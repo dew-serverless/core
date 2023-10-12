@@ -1,10 +1,10 @@
 <?php
 
 use Dew\Core\Cli\CliEvent;
+use Dew\Core\Cli\CliHandler;
 use Dew\Core\EventManager;
 use Dew\Core\FunctionCompute;
 use Dew\Core\RoadRunner;
-use Dew\Core\Tests\CliHandler;
 
 $events = new EventManager(RoadRunner::createFromGlobal());
 
