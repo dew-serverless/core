@@ -4,6 +4,7 @@ namespace Dew\Core;
 
 use Dew\Core\Contracts\FunctionComputeEvent;
 use Dew\Core\Contracts\HandlesEvent;
+use Dew\Core\Contracts\ProvidesContext;
 use Dew\Core\Contracts\ResolvesEventHandler;
 use Dew\Core\Contracts\ServesHttpRequest;
 use InvalidArgumentException;
@@ -32,7 +33,7 @@ class EventManager implements ResolvesEventHandler
     /**
      * The runtime context.
      */
-    protected ?FunctionCompute $context = null;
+    protected ?ProvidesContext $context = null;
 
     public function __construct(
         protected ServesHttpRequest $server
@@ -43,7 +44,7 @@ class EventManager implements ResolvesEventHandler
     /**
      * Set runtime context.
      */
-    public function contextUsing(FunctionCompute $context): self
+    public function contextUsing(ProvidesContext $context): self
     {
         $this->context = $context;
 
@@ -53,7 +54,7 @@ class EventManager implements ResolvesEventHandler
     /**
      * The runtime context.
      */
-    public function context(): FunctionCompute
+    public function context(): ProvidesContext
     {
         if (is_null($this->context)) {
             throw new RuntimeException('Missing Function Compute runtime context.');
