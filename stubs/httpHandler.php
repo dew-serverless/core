@@ -5,14 +5,11 @@ use Dew\Core\ApiGateway\ApiGatewayHandler;
 use Dew\Core\EventManager;
 use Dew\Core\FunctionCompute;
 use Dew\Core\RoadRunner;
-use Dew\Core\Server;
 
-$handlers = new EventManager;
+$events = new EventManager(RoadRunner::createFromGlobal());
 
-$handlers->register(ApiGatewayEvent::class, ApiGatewayHandler::class);
+$events->register(ApiGatewayEvent::class, ApiGatewayHandler::class);
 
-$server = new Server(RoadRunner::createFromGlobal(), $handlers);
+$events->contextUsing(FunctionCompute::createFromEnvironment());
 
-$server->contextUsing(FunctionCompute::createFromEnvironment());
-
-$server->handleNext();
+$events->listen();

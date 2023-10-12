@@ -7,15 +7,15 @@ use Dew\Core\Contracts\HandlesEvent;
 abstract class EventHandler implements HandlesEvent
 {
     public function __construct(
-        protected Server $server
+        protected EventManager $events
     ) {
         //
     }
 
     /**
-     * The underlying server.
+     * The underlying event manager.
      */
-    public function server(): Server
+    public function events(): EventManager
     {
         return $this->server;
     }

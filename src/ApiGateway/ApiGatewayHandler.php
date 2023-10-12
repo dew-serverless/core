@@ -4,18 +4,18 @@ namespace Dew\Core\ApiGateway;
 
 use Dew\Core\Contracts\ServesFastCgiRequest;
 use Dew\Core\EventHandler;
+use Dew\Core\EventManager;
 use Dew\Core\FpmHandler;
-use Dew\Core\Server;
 use Psr\Http\Message\ResponseInterface;
 
 class ApiGatewayHandler extends EventHandler
 {
     public function __construct(
-        Server $server,
+        EventManager $events,
         protected ?ServesFastCgiRequest $fpm = null,
         protected ?FastCgiRequestFactory $factory = null
     ) {
-        parent::__construct($server);
+        parent::__construct($events);
 
         $this->fpm = $this->fpm ?: new FpmHandler;
         $this->fpm->start();
