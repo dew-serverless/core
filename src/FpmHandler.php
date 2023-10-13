@@ -2,12 +2,14 @@
 
 namespace Dew\Core;
 
+use Dew\Core\Contracts\ServesFastCgiRequest;
 use hollodotme\FastCGI\Client;
 use hollodotme\FastCGI\Interfaces\ProvidesRequestData;
+use hollodotme\FastCGI\Interfaces\ProvidesResponseData;
 use hollodotme\FastCGI\SocketConnections\UnixDomainSocket;
 use Symfony\Component\Process\Process;
 
-class FpmHandler
+class FpmHandler implements ServesFastCgiRequest
 {
     const SOCKET = '/tmp/.dew/php-fpm.sock';
     const CONFIG = '/opt/etc/php-fpm.conf';
@@ -54,7 +56,7 @@ class FpmHandler
         return file_exists(self::SOCKET);
     }
 
-    public function handle(ProvidesRequestData $request)
+    public function handle(ProvidesRequestData $request): ProvidesResponseData
     {
         $socketId = $this->client->sendAsyncRequest($this->connection, $request);
 

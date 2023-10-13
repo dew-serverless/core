@@ -6,7 +6,10 @@ use ArrayAccess;
 use Dew\Core\Contracts\FunctionComputeEvent;
 use Exception;
 
-class Event implements FunctionComputeEvent, ArrayAccess
+/**
+ * @implements ArrayAccess<string, mixed>
+ */
+abstract class Event implements FunctionComputeEvent, ArrayAccess
 {
     public function __construct(
         protected FunctionComputeEvent|array $event
@@ -15,6 +18,13 @@ class Event implements FunctionComputeEvent, ArrayAccess
             $this->event = $this->event->toArray();
         }
     }
+
+    /**
+     * Determine if the given payload belongs to the event.
+     *
+     * @param  array<string, mixed>  $event
+     */
+    abstract public static function is(array $event): bool;
 
     public function offsetExists(mixed $offset): bool
     {

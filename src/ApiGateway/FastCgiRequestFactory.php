@@ -73,7 +73,9 @@ class FastCgiRequestFactory
      */
     protected function buildContent(ApiGatewayEvent $event): string
     {
-        $contentType = trim(explode(';', $event->contentType())[0]);
+        $contentType = $event->contentType()
+            ? trim(explode(';', $event->contentType())[0])
+            : null;
 
         if ($contentType === 'application/x-www-form-urlencoded') {
             $body = json_decode($event->body(), associative: true);

@@ -1,21 +1,15 @@
 <?php
 
-use Dew\Core\Contracts\FunctionComputeEvent;
+use Dew\Core\Cli\CliEvent;
+use Dew\Core\Cli\CliHandler;
+use Dew\Core\EventManager;
 use Dew\Core\FunctionCompute;
 use Dew\Core\RoadRunner;
-use Dew\Core\Server;
-use Nyholm\Psr7\Response;
-use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\Process\Process;
 
-$fc = FunctionCompute::createFromEnvironment();
-$server = new Server(RoadRunner::createFromGlobal());
+$events = new EventManager(RoadRunner::createFromGlobal());
 
-$server->handleEvent(function (FunctionComputeEvent $event): ResponseInterface {
-    $process = Process::fromShellCommandline($event['command']);
+$events->register(CliEvent::class, CliHandler::class);
 
-    return new Response(200, [], json_encode([
-        'status' => $process->run(),
-        'output' => $process->getOutput(),
-    ]));
-});
+$events->contextUsing(FunctionCompute::createFromEnvironment());
+
+$events->listen();
