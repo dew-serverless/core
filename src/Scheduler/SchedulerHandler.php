@@ -28,6 +28,8 @@ class SchedulerHandler extends EventHandler
     {
         Process::fromShellCommandline(
             'php artisan scheduler:run', $this->events->context()->codePath()
-        )->run();
+        )->run(function ($type, $buffer): void {
+            echo $buffer;
+        });
     }
 }
