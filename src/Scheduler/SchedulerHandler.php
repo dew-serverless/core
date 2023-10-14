@@ -27,7 +27,7 @@ class SchedulerHandler extends EventHandler
     public function runScheduled(): void
     {
         Process::fromShellCommandline(
-            'php artisan scheduler:run', $this->events->context()->codePath()
+            'php artisan schedule:run', $this->events->context()->codePath()
         )->run(function ($type, $buffer): void {
             echo $buffer;
         });
