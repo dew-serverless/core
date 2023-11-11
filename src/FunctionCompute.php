@@ -4,8 +4,10 @@ namespace Dew\Core;
 
 use Darabonba\OpenApi\Models\Config;
 use Dew\Core\Contracts\ProvidesContext;
+use Dew\Core\Contracts\ProvidesDewContext;
+use RuntimeException;
 
-class FunctionCompute implements ProvidesContext
+class FunctionCompute implements ProvidesContext, ProvidesDewContext
 {
     /**
      * New Function Compute context.
@@ -129,6 +131,14 @@ class FunctionCompute implements ProvidesContext
     public function codePath(): string
     {
         return $this->context['FC_FUNC_CODE_PATH'];
+    }
+
+    /**
+     * The MNS queue name.
+     */
+    public function mnsQueue(): ?string
+    {
+        return $this->context['DEW_MNS_QUEUE'] ?? null;
     }
 
     /**
