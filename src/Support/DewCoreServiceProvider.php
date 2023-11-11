@@ -3,6 +3,7 @@
 namespace Dew\Core\Support;
 
 use Dew\Core\Dew;
+use Dew\Core\FunctionCompute;
 use Illuminate\Support\ServiceProvider;
 
 class DewCoreServiceProvider extends ServiceProvider
@@ -13,8 +14,11 @@ class DewCoreServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (Dew::runningInFc()) {
+            $context = FunctionCompute::createFromEnvironment();
+
             $this->ensureSessionFileLocationExists();
             $this->ensureCompiledViewPathExists();
+            $this->configureQueueConnection($context);
         }
     }
 
@@ -41,5 +45,22 @@ class DewCoreServiceProvider extends ServiceProvider
         if ($path && ! is_dir($path)) {
             mkdir($path, 0755, recursive: true);
         }
+    }
+
+    /**
+     * Configure MNS queue with the given runtime context.
+     */
+    protected function configureQueueConnection(FunctionCompute $context): void
+    {
+        $this->app['config']['queue.dew'] = [
+            'driver' => 'mns',
+            'key' => $context->accessKeyId(),
+            'secret' => $context->accessKeySecret(),
+            'token' => $context->securityToken(),
+            'endpoint' => sprintf('https://%s.mns.%s-internal.aliyuncs.com',
+                $context->accountId(), $context->region()
+            ),
+            'queue' => $context->mnsQueue(),
+        ];
     }
 }
