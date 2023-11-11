@@ -52,7 +52,7 @@ class DewCoreServiceProvider extends ServiceProvider
      */
     protected function configureQueueConnection(FunctionCompute $context): void
     {
-        $this->app['config']['queue.dew'] = [
+        $this->app['config']['queue.connections.dew'] = [
             'driver' => 'mns',
             'key' => $context->accessKeyId(),
             'secret' => $context->accessKeySecret(),
