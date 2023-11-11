@@ -57,7 +57,7 @@ class DewCoreServiceProvider extends ServiceProvider
             'key' => $context->accessKeyId(),
             'secret' => $context->accessKeySecret(),
             'token' => $context->securityToken(),
-            'endpoint' => sprintf('https://%s.mns.%s-internal.aliyuncs.com',
+            'endpoint' => sprintf('http://%s.mns.%s-internal.aliyuncs.com',
                 $context->accountId(), $context->region()
             ),
             'queue' => $context->mnsQueue(),
