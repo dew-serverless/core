@@ -19,6 +19,7 @@ class DewCoreServiceProvider extends ServiceProvider
             $this->ensureSessionFileLocationExists();
             $this->ensureCompiledViewPathExists();
             $this->configureQueueConnection($context);
+            $this->configureCacheStore($context);
         }
     }
 
@@ -61,6 +62,24 @@ class DewCoreServiceProvider extends ServiceProvider
                 $context->accountId(), $context->region()
             ),
             'queue' => $context->mnsQueue(),
+        ];
+    }
+
+    /**
+     * Configure Tablestore cache with the given runtime context.
+     */
+    protected function configureCacheStore(FunctionCompute $context): void
+    {
+        $this->app['config']['cache.stores.dew'] = [
+            'driver' => 'tablestore',
+            'key' => $context->accessKeyId(),
+            'secret' => $context->accessKeySecret(),
+            'token' => $context->securityToken(),
+            'endpoint' => sprintf('http://dew-%s.%s.vpc.ots.aliyuncs.com',
+                $context->tablestoreInstance(), $context->region()
+            ),
+            'instance' => $context->tablestoreInstance(),
+            'table' => $context->tablestoreCache(),
         ];
     }
 }

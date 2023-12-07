@@ -142,6 +142,22 @@ class FunctionCompute implements ProvidesContext, ProvidesDewContext
     }
 
     /**
+     * The Tablestore instance name.
+     */
+    public function tablestoreInstance(): ?string
+    {
+        return $this->context['DEW_TABLESTORE_INSTNACE'] ?? null;
+    }
+
+    /**
+     * The cache table name on Tablestore instance.
+     */
+    public function tablestoreCache(): string
+    {
+        return $this->context['DEW_TABLESTORE_CACHE'] ?? 'cache';
+    }
+
+    /**
      * Make ACS config based on environment.
      */
     public function newConfig(): Config
