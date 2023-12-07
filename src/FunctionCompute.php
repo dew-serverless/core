@@ -146,7 +146,7 @@ class FunctionCompute implements ProvidesContext, ProvidesDewContext
      */
     public function tablestoreInstance(): ?string
     {
-        return $this->context['DEW_TABLESTORE_INSTNACE'] ?? null;
+        return $this->context['DEW_TABLESTORE_INSTANCE'] ?? null;
     }
 
     /**
