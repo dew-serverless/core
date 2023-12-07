@@ -17,5 +17,5 @@ interface ProvidesDewContext
     /**
      * The cache table name on Tablestore instance.
      */
-    public function tablestoreCache(): string
+    public function tablestoreCache(): string;
 }
