@@ -4,12 +4,15 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Dew\Core\FunctionCompute;
 
-$fc = FunctionCompute::createFromEnvironment();
+$context = FunctionCompute::createFromEnvironment();
 
-$handler = sprintf('%sHandler.php', $fc->functionName());
+$handler = sprintf('%sHandler.php', $context->functionHandler());
 
 if (! file_exists($handler)) {
-    throw new Exception("Failed to resolve handler for function [{$fc->functionName()}].");
+    throw new RuntimeException(sprintf(
+        'Failed to resolve [%s] handler for function [%s].',
+        $context->functionHandler(), $context->functionName()
+    ));
 }
 
 require_once $handler;
