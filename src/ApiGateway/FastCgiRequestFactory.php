@@ -2,87 +2,85 @@
 
 namespace Dew\Core\ApiGateway;
 
-use Dew\Core\Dew;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UriInterface;
 use hollodotme\FastCGI\Interfaces\ProvidesRequestData;
 
 class FastCgiRequestFactory
 {
+    /**
+     * Create a new FastCGI request factory.
+     */
     public function __construct(
-        protected string $scriptName,
-        protected string $documentRoot
+        protected string $scriptFilename
     ) {
-        $this->scriptName = '/'.ltrim($this->scriptName, '/');
-        $this->documentRoot = rtrim($this->documentRoot, '/');
+        //
     }
 
-    public function make(ApiGatewayEvent $event): ProvidesRequestData
+    /**
+     * Create a FastCGI request from the PSR request.
+     */
+    public function make(ServerRequestInterface $psrRequest): ProvidesRequestData
     {
-        $request = new FastCgiRequest($this->documentRoot.$this->scriptName);
-        $request->setRequestUri($this->buildRequestUri($event->path(), $event->queryParameters()));
-        $request->setRequestMethod($event->httpMethod());
-        $request->setContent($this->buildContent($event));
+        $psrRequest = $this->configurePassthroughHost($psrRequest);
 
-        if ($contentType = $event->contentType()) {
-            $request->setContentType($contentType);
-        }
+        $request = new FastCgiRequest($this->scriptFilename);
 
-        $request->setServerSoftware('dew/'.Dew::version());
+        with($psrRequest->getUri(), function (UriInterface $uri) use ($request) {
+            $request->setRequestUri(rtrim($uri->getPath().'?'.$uri->getQuery(), '?'));
 
-        $request->setRemoteAddress('127.0.0.1');
-        $request->setRemotePort(80);
-        $request->setServerAddress('127.0.0.1');
-        $request->setServerPort(80);
-        $request->setServerName('localhost');
+            $request->setCustomVar('QUERY_STRING', $uri->getQuery());
+            $request->setCustomVar('DOCUMENT_URI', $uri->getPath());
+            $request->setCustomVar('PATH_INFO', $uri->getPath());
+            $request->setCustomVar('PHP_SELF', $uri->getPath());
+        });
 
-        $request->setCustomVar('QUERY_STRING', $this->buildQueryString($event->queryParameters()));
-        $request->setCustomVar('SCRIPT_NAME', $this->scriptName);
-        $request->setCustomVar('PATH_INFO', $event->path());
-        $request->setCustomVar('DOCUMENT_ROOT', $this->documentRoot);
+        with($psrRequest->getServerParams(), function (array $params) use ($request) {
+            $request->setServerAddress('127.0.0.1');
+            $request->setServerPort($params['FC_SERVER_PORT'] ?? 80);
+            $request->setServerName($params['FC_INSTANCE_ID'] ?? 'localhost');
 
-        foreach ($event->headers() as $name => $value) {
-            $request->setCustomVar($this->buildHttpHeaderName($name), $value);
+            $request->setRemoteAddress($params['REMOTE_ADDR'] ?? '127.0.0.1');
+            $request->setRemotePort(80);
+        });
+
+        $request->setRequestMethod($psrRequest->getMethod());
+        $request->setContent((string) $psrRequest->getBody());
+        $request->setContentType($psrRequest->getHeaderLine('content-type'));
+
+        $request->setServerSoftware('dew');
+
+        $request->setCustomVar('SCRIPT_FILENAME', $this->scriptFilename);
+        $request->setCustomVar('SCRIPT_NAME', basename($this->scriptFilename));
+        $request->setCustomVar('DOCUMENT_ROOT', dirname($this->scriptFilename));
+
+        foreach ($psrRequest->getHeaders() as $name => $values) {
+            $name = strtoupper('HTTP_'.str_replace('-', '_', $name));
+
+            foreach ($values as $value) {
+                $request->setCustomVar($name, $value);
+            }
         }
 
         return $request;
     }
 
-    protected function buildRequestUri(string $path, array $query): string
-    {
-        if (empty($query)) {
-            return $path;
-        }
-
-        return $path.'?'.$this->buildQueryString($query);
-    }
-
-    protected function buildQueryString(array $query): string
-    {
-        return http_build_query($query);
-    }
-
-    protected function buildHttpHeaderName(string $header): string
-    {
-        $header = str_replace('-', '_', $header);
-        $header = strtoupper($header);
-
-        return sprintf('HTTP_%s', $header);
-    }
-
     /**
-     * Build content type respected request content.
+     * Configure the header host if necessary.
+     *
+     * @template T
+     * @param  T  $request
+     * @return T
      */
-    protected function buildContent(ApiGatewayEvent $event): string
+    protected function configurePassthroughHost(RequestInterface $request): RequestInterface
     {
-        $contentType = $event->contentType()
-            ? trim(explode(';', $event->contentType())[0])
-            : null;
+        $host = $request->getHeaderLine('x-dew-host');
 
-        if ($contentType === 'application/x-www-form-urlencoded') {
-            $body = json_decode($event->body(), associative: true);
-
-            return is_array($body) ? http_build_query($body) : $event->body();
+        if ($host === null) {
+            return $request;
         }
 
-        return $event->body();
+        return $request->withHeader('host', $host)->withoutHeader('x-dew-host');
     }
 }
