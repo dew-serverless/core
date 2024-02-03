@@ -5,6 +5,8 @@ namespace Dew\Core;
 use Closure;
 use Dew\Core\Contracts\ValidatesEventBridge;
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 
@@ -16,6 +18,24 @@ class EventBridgeValidation implements ValidatesEventBridge
      * @var callable(\Psr\Http\Message\ServerRequestInterface): string
      */
     protected ?Closure $resolvesUrl = null;
+
+    /**
+     * The resolved certificates.
+     *
+     * @var string[]
+     */
+    protected array $resolved = [];
+
+    /**
+     * Create a new Event Bridge validation instance.
+     */
+    public function __construct(
+        protected ?ClientInterface $client = null
+    ) {
+        $this->client = $this->client ?? new Client([
+            'timeout' => 3.0,
+        ]);
+    }
 
     /**
      * Determine if the request contains valid Event Bridge invocation payload.
@@ -157,10 +177,17 @@ class EventBridgeValidation implements ValidatesEventBridge
     {
         $url = $request->getHeaderLine('x-eventbridge-signature-url');
 
-        $client = new Client([
-            'timeout' => 3.0,
-        ]);
+        // Each time we retrieve the certificate, we cache the content to
+        // speed up the process. If the same URL has been resolved, we
+        // can return it quickly without having to send the request.
+        if (isset($this->resolved[$url])) {
+            return $this->resolved[$url];
+        }
 
-        return (string) $client->get($url)->getBody();
+        $certificate = (string) $this->client
+            ->sendRequest(new Request('GET', $url))
+            ->getBody();
+
+        return $this->resolved[$url] = $certificate;
     }
 }

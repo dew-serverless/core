@@ -3,14 +3,19 @@
 namespace Dew\Core\Tests;
 
 use Dew\Core\EventBridgeValidation;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
 use Illuminate\Support\Str;
-use Mockery;
+use Mockery as m;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class EventBridgeValidationTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
     public function test_request_missing_signature()
     {
         $validation = new EventBridgeValidation;
@@ -85,8 +90,8 @@ class EventBridgeValidationTest extends TestCase
 
     public function test_signature_not_matched_is_invalid()
     {
-        $mock = Mockery::mock(EventBridgeValidation::class)->makePartial();
-        $mock->expects()->getCertificate(Mockery::any())->andReturns(file_get_contents(__DIR__.'/Stubs/public.pem'));
+        $mock = m::mock(EventBridgeValidation::class)->makePartial();
+        $mock->expects()->getCertificate(m::any())->andReturns(file_get_contents(__DIR__.'/Stubs/public.pem'));
 
         $request = $this->createValidRequest();
         $this->assertFalse($mock->valid($request->withHeader('x-eventbridge-signature', 'foo')));
@@ -94,8 +99,8 @@ class EventBridgeValidationTest extends TestCase
 
     public function test_signature_matched_is_valid()
     {
-        $mock = Mockery::mock(EventBridgeValidation::class)->makePartial();
-        $mock->expects()->getCertificate(Mockery::any())->andReturns(file_get_contents(__DIR__.'/Stubs/public.pem'));
+        $mock = m::mock(EventBridgeValidation::class)->makePartial();
+        $mock->expects()->getCertificate(m::any())->andReturns(file_get_contents(__DIR__.'/Stubs/public.pem'));
 
         $request = $this->createValidRequest();
         $this->assertTrue($mock->valid($request));
@@ -103,14 +108,23 @@ class EventBridgeValidationTest extends TestCase
 
     public function test_request_url_mutation()
     {
-        $mock = Mockery::mock(EventBridgeValidation::class)->makePartial();
-        $mock->expects()->getCertificate(Mockery::any())->andReturns(file_get_contents(__DIR__.'/Stubs/public.pem'));
+        $mock = m::mock(EventBridgeValidation::class)->makePartial();
+        $mock->expects()->getCertificate(m::any())->andReturns(file_get_contents(__DIR__.'/Stubs/public.pem'));
         $mock->urlUsing(fn (ServerRequestInterface $request) => (string) $request->getUri()->withScheme('https'));
 
         $request = $this->createValidRequest();
         $this->assertTrue($mock->valid($request->withUri(
             $request->getUri()->withScheme('http')
         )));
+    }
+
+    public function test_certificate_resolution_caches_the_contents()
+    {
+        $mock = m::mock(ClientInterface::class);
+        $mock->expects()->sendRequest(m::any())->andReturns(new Response(200, body: 'foo'));
+        $eventBridge = new EventBridgeValidation($mock);
+        $eventBridge->getCertificate($this->createValidRequest());
+        $eventBridge->getCertificate($this->createValidRequest());
     }
 
     protected function createValidRequest(): ServerRequest
