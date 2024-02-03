@@ -1,17 +1,16 @@
 <?php
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
-use Dew\Core\FunctionCompute;
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
 
-$context = FunctionCompute::createFromEnvironment();
-
-$handler = sprintf('%sHandler.php', $context->functionHandler());
+$handler = sprintf('%sRuntime.php', $_SERVER['FC_FUNCTION_HANDLER']);
 
 if (! file_exists($handler)) {
     throw new RuntimeException(sprintf(
-        'Failed to resolve [%s] handler for function [%s].',
-        $context->functionHandler(), $context->functionName()
+        'Failed to resolve handler [%s] for function [%s].',
+        $handler, $_SERVER['FC_FUNCTION_NAME']
     ));
 }
 
