@@ -3,13 +3,12 @@
 namespace Dew\Core\Contracts;
 
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 interface HandlesEvent
 {
     /**
-     * Handle the given event.
-     *
-     * @param  \Dew\Core\Contracts\FunctionComputeEvent  $event
+     * Handle the given event request.
      */
-    public function handle($event): ResponseInterface;
+    public function handle(ServerRequestInterface $request): ResponseInterface;
 }

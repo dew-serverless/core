@@ -1,6 +1,6 @@
 <?php
 
-namespace Dew\Core\ApiGateway;
+namespace Dew\Core\Fpm;
 
 use hollodotme\FastCGI\Requests\AbstractRequest;
 
