@@ -87,6 +87,14 @@ class Fpm
     }
 
     /**
+     * Stop the FPM process.
+     */
+    public function stop(): void
+    {
+        $this->fpm?->stop();
+    }
+
+    /**
      * Configure the instance as a singleton.
      */
     public function asGlobal(): self
@@ -134,5 +142,13 @@ class Fpm
         return static::$instance ?? throw new RuntimeException(
             'The FPM instance is missing.'
         );
+    }
+
+    /**
+     * Handle the destruction of the FPM instance.
+     */
+    public function __destruct()
+    {
+        $this->stop();
     }
 }
