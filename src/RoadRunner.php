@@ -12,7 +12,7 @@ use Spiral\RoadRunner\Worker;
 use Spiral\RoadRunner\WorkerInterface;
 use Throwable;
 
-class RoadRunner implements ServesHttpRequest
+final class RoadRunner implements ServesHttpRequest
 {
     /**
      * The HTTP factory.

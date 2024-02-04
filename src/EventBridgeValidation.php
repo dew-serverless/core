@@ -15,7 +15,7 @@ class EventBridgeValidation implements ValidatesEventBridge
     /**
      * The custom URL resolution handler.
      *
-     * @var callable(\Psr\Http\Message\ServerRequestInterface): string
+     * @var \Closure(\Psr\Http\Message\ServerRequestInterface): string
      */
     protected ?Closure $resolvesUrl = null;
 
@@ -144,7 +144,7 @@ class EventBridgeValidation implements ValidatesEventBridge
         ));
 
         $data = collect([
-            $this->resolvesUrl
+            is_callable($this->resolvesUrl)
                 ? call_user_func_array($this->resolvesUrl, [$request])
                 : (string) $request->getUri(),
             $headers->join("\n"),
@@ -161,7 +161,14 @@ class EventBridgeValidation implements ValidatesEventBridge
      */
     public function getSecret(ServerRequestInterface $request): string
     {
-        $data = base64_decode($request->getHeaderLine('x-eventbridge-signature-secret'));
+        $data = base64_decode(
+            $request->getHeaderLine('x-eventbridge-signature-secret'),
+            strict: true
+        );
+
+        if ($data === false) {
+            throw new RuntimeException('Failed to unwrap the secret.');
+        }
 
         if (! openssl_public_decrypt($data, $decrypted, $this->getCertificate($request))) {
             throw new RuntimeException('Failed to decrypt the secret.');

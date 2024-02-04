@@ -21,7 +21,9 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^10.0",
-        "mockery/mockery": "^1.6"
+        "mockery/mockery": "^1.6",
+        "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan-strict-rules": "^1.5"
     },
     "autoload": {
         "psr-4": {
@@ -32,6 +34,9 @@
         "psr-4": {
             "Dew\\Core\\Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "lint": "phpstan"
     },
     "extra": {
         "laravel": {

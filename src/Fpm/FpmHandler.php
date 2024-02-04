@@ -12,7 +12,7 @@ use Psr\Http\Message\UriInterface;
 use RuntimeException;
 use hollodotme\FastCGI\Interfaces\ProvidesRequestData;
 
-class FpmHandler implements HandlesEvent
+final class FpmHandler implements HandlesEvent
 {
     const TYPE_HTTP = 'http';
     const TYPE_EVENT = 'event';
@@ -53,7 +53,7 @@ class FpmHandler implements HandlesEvent
 
         return $this->formatResponse(new Response(
             $status === '' ? 200 : (int) $status,
-            $response->getHeaders(), (string) $response->getBody()
+            $response->getHeaders(), $response->getBody()
         ));
     }
 
@@ -86,10 +86,12 @@ class FpmHandler implements HandlesEvent
         $request->setRequestMethod($decoded['httpMethod']);
         $request->setRequestUri(rtrim($decoded['path'].'?'.$queryString, '?'));
 
-        $request->setContent($decoded['isBase64Encoded']
-            ? base64_decode($decoded['body'])
-            : $decoded['body']
-        );
+        if ($decoded['isBase64Encoded'] === true) {
+            $content = base64_decode($decoded['body'], strict: true);
+            $request->setContent(is_string($content) ? $content : '');
+        } else {
+            $request->setContent($decoded['body']);
+        }
 
         $request->setContentType($decoded['headers']['content-type'] ?? '');
 
