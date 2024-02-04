@@ -15,7 +15,7 @@ class EventBridgeValidation implements ValidatesEventBridge
     /**
      * The custom URL resolution handler.
      *
-     * @var callable(\Psr\Http\Message\ServerRequestInterface): string
+     * @var \Closure(\Psr\Http\Message\ServerRequestInterface): string
      */
     protected ?Closure $resolvesUrl = null;
 
