@@ -28,7 +28,8 @@ class RoadRunner implements ServesHttpRequest
      * Crete a new RoadRunner instance.
      */
     public function __construct(
-        protected WorkerInterface $worker
+        protected WorkerInterface $worker,
+        protected ?int $maxRequests = null
     ) {
         $this->factory = new Psr17Factory;
         $this->psr7 = new PSR7Worker(
@@ -39,9 +40,9 @@ class RoadRunner implements ServesHttpRequest
     /**
      * Create a new Roadrunner instance.
      */
-    public static function createFromGlobal(): static
+    public static function createFromGlobal(?int $maxRequests = null): static
     {
-        return new static(Worker::create());
+        return new static(Worker::create(), $maxRequests);
     }
 
     /**
@@ -52,27 +53,39 @@ class RoadRunner implements ServesHttpRequest
      */
     public function serve(callable $callback): void
     {
-        while (true) {
-            try {
-                $request = $this->psr7->waitRequest();
+        $invocations = 0;
 
-                if ($request === null) {
-                    break;
-                }
-            } catch (Throwable $e) {
-                $this->psr7->respond(new Response(400));
-
-                continue;
-            }
-
+        while ($request = $this->psr7->waitRequest()) {
             try {
                 $callback($request, function (ResponseInterface $response) {
                     $this->psr7->respond($response);
                 });
+
+                $this->respawnIfServedMaxRequests($invocations++);
             } catch (Throwable $e) {
                 $this->psr7->respond(new Response(500, [], 'Something Went Wrong!'));
                 $this->psr7->getWorker()->error($e->getMessage());
             }
+        }
+    }
+
+    /**
+     * Respawn the worker when it has served the maximum number of requests.
+     */
+    protected function respawnIfServedMaxRequests(int $invocations): void
+    {
+        if (! is_int($this->maxRequests)) {
+            return;
+        }
+
+        if ($invocations > $this->maxRequests) {
+            fwrite(STDERR, sprintf("Respawn the worker after %s requests.\n",
+                $this->maxRequests
+            ));
+
+            $this->psr7->getWorker()->stop();
+
+            return;
         }
     }
 }

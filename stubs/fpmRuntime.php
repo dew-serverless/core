@@ -62,8 +62,8 @@ $fpm = Fpm::boot();
 |--------------------------------------------------------------------------
 |
 | At this stage we start the server and listen for incoming requests. And
-| to mitigate the risk of memory leaks, we respawn the container after
-| it has fulfilled the maximum number of requests. We're good to go.
+| to mitigate the risk of memory leaks, we respawn the worker after it
+| has fulfilled the maximum number of requests, so we're good to go.
 |
 */
 
@@ -76,11 +76,14 @@ $eventBridge = tap(new EventBridgeValidation)
 
 $factory = new EventHandlerFactory(__DIR__.'/handler.php', $eventBridge);
 
-RoadRunner::createFromGlobal()
-    ->serve(function (ServerRequestInterface $request, callable $send) use ($fpm, $factory) {
-        $response = $factory->make($request)->handle($request);
+$server = RoadRunner::createFromGlobal(
+    (int) ($_SERVER['MAX_REQUESTS'] ?? 250)
+);
 
-        $send($response);
+$server->serve(function (ServerRequestInterface $request, callable $send) use ($fpm, $factory) {
+    $response = $factory->make($request)->handle($request);
 
-        $fpm->ensureRunning();
-    });
+    $send($response);
+
+    $fpm->ensureRunning();
+});
