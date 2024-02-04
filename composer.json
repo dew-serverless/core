@@ -34,6 +34,9 @@
             "Dew\\Core\\Tests\\": "tests/"
         }
     },
+    "scripts": {
+        "lint": "phpstan"
+    },
     "extra": {
         "laravel": {
             "providers": [
