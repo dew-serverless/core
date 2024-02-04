@@ -1,27 +1,39 @@
 <?php
 
-namespace Dew\Core\ApiGateway;
+namespace Dew\Core\Fpm;
 
 use hollodotme\FastCGI\Requests\AbstractRequest;
 
 class FastCgiRequest extends AbstractRequest
 {
-    private string $requestMethod;
+    /**
+     * The request method.
+     */
+    protected string $method;
 
+    /**
+     * Create a new FastCGI request instance.
+     */
     public function __construct(string $scriptFilename)
     {
         parent::__construct($scriptFilename, '');
     }
 
+    /**
+     * Set the request method.
+     */
     public function setRequestMethod(string $method): self
     {
-        $this->requestMethod = $method;
+        $this->method = $method;
 
         return $this;
     }
 
+    /**
+     * The request method.
+     */
     public function getRequestMethod(): string
     {
-        return $this->requestMethod;
+        return $this->method;
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use Dew\Core\StorageDirectories;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 
@@ -42,7 +43,7 @@ $app = require_once __DIR__.'/bootstrap/app.php';
 |
 */
 
-$app->useStoragePath('/tmp');
+$app->useStoragePath(StorageDirectories::PATH);
 
 $kernel = $app->make(Kernel::class);
 
