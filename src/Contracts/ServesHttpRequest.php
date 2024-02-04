@@ -7,7 +7,7 @@ interface ServesHttpRequest
     /**
      * Serve the incoming HTTP request.
      *
-     * @param  callable  $callback
+     * @param  callable(\Psr\Http\Message\ServerRequestInterface, callable(\Psr\Http\Message\ResponseInterface): void): void  $callback
      * @return void
      */
     public function serve(callable $callback): void;
