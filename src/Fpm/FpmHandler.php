@@ -53,7 +53,7 @@ final class FpmHandler implements HandlesEvent
 
         return $this->formatResponse(new Response(
             $status === '' ? 200 : (int) $status,
-            $response->getHeaders(), (string) $response->getBody()
+            $response->getHeaders(), $response->getBody()
         ));
     }
 
