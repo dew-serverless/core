@@ -161,7 +161,14 @@ class EventBridgeValidation implements ValidatesEventBridge
      */
     public function getSecret(ServerRequestInterface $request): string
     {
-        $data = base64_decode($request->getHeaderLine('x-eventbridge-signature-secret'));
+        $data = base64_decode(
+            $request->getHeaderLine('x-eventbridge-signature-secret'),
+            strict: true
+        );
+
+        if ($data === false) {
+            throw new RuntimeException('Failed to unwrap the secret.');
+        }
 
         if (! openssl_public_decrypt($data, $decrypted, $this->getCertificate($request))) {
             throw new RuntimeException('Failed to decrypt the secret.');
