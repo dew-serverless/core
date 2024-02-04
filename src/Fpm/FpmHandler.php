@@ -86,9 +86,9 @@ final class FpmHandler implements HandlesEvent
         $request->setRequestMethod($decoded['httpMethod']);
         $request->setRequestUri(rtrim($decoded['path'].'?'.$queryString, '?'));
 
-        $request->setContent($decoded['isBase64Encoded']
-            ? base64_decode($decoded['body'])
-            : $decoded['body']
+        $request->setContent(
+            $decoded['isBase64Encoded'] === true
+                ? base64_decode($decoded['body']) : $decoded['body']
         );
 
         $request->setContentType($decoded['headers']['content-type'] ?? '');
