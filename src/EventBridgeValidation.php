@@ -144,7 +144,7 @@ class EventBridgeValidation implements ValidatesEventBridge
         ));
 
         $data = collect([
-            $this->resolvesUrl
+            is_callable($this->resolvesUrl)
                 ? call_user_func_array($this->resolvesUrl, [$request])
                 : (string) $request->getUri(),
             $headers->join("\n"),
