@@ -12,7 +12,7 @@ use Psr\Http\Message\UriInterface;
 use RuntimeException;
 use hollodotme\FastCGI\Interfaces\ProvidesRequestData;
 
-class FpmHandler implements HandlesEvent
+final class FpmHandler implements HandlesEvent
 {
     const TYPE_HTTP = 'http';
     const TYPE_EVENT = 'event';

@@ -10,7 +10,7 @@ use hollodotme\FastCGI\Interfaces\ProvidesRequestData;
 use hollodotme\FastCGI\Interfaces\ProvidesResponseData;
 use hollodotme\FastCGI\SocketConnections\UnixDomainSocket;
 
-class Fpm
+final class Fpm
 {
     /**
      * The location of the socket file.
