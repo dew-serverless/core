@@ -32,7 +32,7 @@ final class CliHandler implements HandlesEvent
 
         $durationMs = (int) round((microtime(true) - $process->getStartTime()) * 1000);
 
-        $this->ping($data['callback'] ?? null, [
+        $this->ping($data['callback_url'] ?? null, [
             'exit_code' => $process->getExitCode(),
             'output' => $output,
             'duration_ms' => $durationMs,
