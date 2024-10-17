@@ -31,7 +31,7 @@ final class CliHandler implements HandlesEvent
         });
 
         $this->ping($data['callback'] ?? null, [
-            'status' => $process->getExitCode(),
+            'exit_code' => $process->getExitCode(),
             'output' => $output,
             'command' => $process->getCommandLine(),
             'acs_request_id' => $request->getHeaderLine('x-fc-request-id'),
