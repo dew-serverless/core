@@ -35,6 +35,7 @@ final class CliHandler implements HandlesEvent
             'output' => $output,
             'command' => $process->getCommandLine(),
             'acs_request_id' => $request->getHeaderLine('x-fc-request-id'),
+            'token' => $data['token'] ?? null,
         ]);
 
         return new Response;
