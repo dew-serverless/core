@@ -30,9 +30,12 @@ final class CliHandler implements HandlesEvent
             $output .= $buffer;
         });
 
+        $durationMs = (int) round((microtime(true) - $process->getStartTime()) * 1000);
+
         $this->ping($data['callback'] ?? null, [
             'exit_code' => $process->getExitCode(),
             'output' => $output,
+            'duration_ms' => $durationMs,
             'command' => $process->getCommandLine(),
             'acs_request_id' => $request->getHeaderLine('x-fc-request-id'),
             'token' => $data['token'] ?? null,
