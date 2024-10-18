@@ -36,7 +36,7 @@ final class CliHandler implements HandlesEvent
             'exit_code' => $process->getExitCode(),
             'output' => $output,
             'duration_ms' => $durationMs,
-            'command' => $process->getCommandLine(),
+            'command_line' => $process->getCommandLine(),
             'acs_request_id' => $request->getHeaderLine('x-fc-request-id'),
             'token' => $data['token'] ?? null,
         ]);
