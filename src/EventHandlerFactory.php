@@ -75,6 +75,10 @@ class EventHandlerFactory
         $data = (string) $request->getBody();
         $decoded = json_decode($data, associative: true);
 
+        if (isset($decoded['httpMethod'])) {
+            return FpmHandler::handleEvent($this->handler);
+        }
+
         return match ($decoded['dewhandler'] ?? '') {
             'warm' => new WarmHandler,
             'ping' => new PingHandler,
