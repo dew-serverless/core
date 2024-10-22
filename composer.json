@@ -36,7 +36,8 @@
         }
     },
     "scripts": {
-        "lint": "phpstan"
+        "lint": "phpstan",
+        "test": "phpunit"
     },
     "extra": {
         "laravel": {
