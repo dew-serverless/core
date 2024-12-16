@@ -2,6 +2,7 @@
 
 use Dew\Core\CliHandlerFactory;
 use Dew\Core\EventBridgeValidation;
+use Dew\Core\Log;
 use Dew\Core\RoadRunner;
 use Dew\Core\StorageDirectories;
 use Illuminate\Contracts\Console\Kernel;
@@ -20,7 +21,7 @@ $app = require __DIR__.'/bootstrap/app.php';
 |
 */
 
-fwrite(STDERR, 'Create storage directories.'.PHP_EOL);
+Log::debug('Create storage directories.');
 
 StorageDirectories::create();
 
@@ -37,7 +38,7 @@ $app->useStoragePath(StorageDirectories::PATH);
 |
 */
 
-fwrite(STDERR, 'Cache Laravel configurations.'.PHP_EOL);
+Log::debug('Cache Laravel configurations.');
 
 $app->make(Kernel::class)->call('config:cache');
 
@@ -52,7 +53,7 @@ $app->make(Kernel::class)->call('config:cache');
 |
 */
 
-fwrite(STDERR, 'Start listening to the requests.'.PHP_EOL);
+Log::debug('Start listening to the requests.');
 
 $eventBridge = tap(new EventBridgeValidation)
     ->urlUsing(fn (ServerRequestInterface $request): string => $request

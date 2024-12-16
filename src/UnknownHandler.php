@@ -14,7 +14,7 @@ class UnknownHandler implements HandlesEvent
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        fwrite(STDERR, sprintf("Unknown event received [%s].\n",
+        Log::debug(sprintf('Unknown event received [%s].',
             (string) $request->getBody()
         ));
 

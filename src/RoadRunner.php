@@ -79,7 +79,7 @@ final class RoadRunner implements ServesHttpRequest
         }
 
         if ($invocations > $this->maxRequests) {
-            fwrite(STDERR, sprintf("Respawn the worker after %s requests.\n",
+            Log::debug(sprintf('Respawn the worker after %s requests.',
                 $this->maxRequests
             ));
 

@@ -3,6 +3,7 @@
 namespace Dew\Core\Warmer;
 
 use Dew\Core\Contracts\HandlesEvent;
+use Dew\Core\Log;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -22,7 +23,7 @@ class PingHandler implements HandlesEvent
         $index = $decoded['index'] ?? 'unknown';
         $total = $decoded['total'] ?? 'unknown';
 
-        fwrite(STDERR, sprintf("Warm up the container [%s] at %s, %s of %s.\n",
+        Log::debug(sprintf('Warm up the container [%s] at %s, %s of %s.',
             $container, $time, $index + 1, $total
         ));
 
