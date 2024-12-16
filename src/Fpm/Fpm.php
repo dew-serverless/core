@@ -2,6 +2,7 @@
 
 namespace Dew\Core\Fpm;
 
+use Dew\Core\Log;
 use RuntimeException;
 use Symfony\Component\Process\Process;
 use hollodotme\FastCGI\Client;
@@ -80,7 +81,7 @@ final class Fpm
 
         $this->fpm->setTimeout(null);
         $this->fpm->start(function (string $type, string $output) {
-            fwrite(STDERR, $output);
+            Log::debug($output);
         });
 
         $this->fpm->waitUntil(fn () => $this->isReady());

@@ -5,6 +5,7 @@ namespace Dew\Core\Warmer;
 use DateTime;
 use DateTimeInterface;
 use Dew\Core\Contracts\HandlesEvent;
+use Dew\Core\Log;
 use Dew\Core\Support\Middleware;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
@@ -26,7 +27,7 @@ class WarmHandler implements HandlesEvent
         $count = $decoded['warm'] ?? 1;
         $time = new DateTime($decoded['time'] ?? 'now');
 
-        fwrite(STDERR, sprintf("Warming up %s HTTP function container(s).\n", $count));
+        Log::debug(sprintf('Warming up %s HTTP function container(s).', $count));
 
         Promise\Utils::settle($this->requests($count, $time))->wait();
 
